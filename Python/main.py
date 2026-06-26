@@ -238,9 +238,9 @@ class CaVaMain(QMainWindow):
             (auth.ERROR_CODE_VAULT_ALREADY_INITIALIZED, "Vault already initialized"),
             (auth.ERROR_CODE_VAULT_NOT_INITIALIZED, "Vault has not been initialized"),
             (auth.ERROR_CODE_INVALID_PASSWORD, "Incorrect password"),
-            (auth.ERROR_CODE_CRYPTO_MISSING, "Argon2 is not available"),
+            (auth.ERROR_CODE_CRYPTO_MISSING, "Argon2 is not available; install argon2-cffi"),
             (auth.ERROR_CODE_KEY_DERIVATION_FAILED, "Unable to derive vault key"),
-            (auth.ERROR_CODE_GENERAL_FAILURE, "General failure"),
+            (auth.ERROR_CODE_GENERAL_FAILURE, "General failure or unexpected error"),
         ]
         message = "\n".join([f"{code}: {text}" for code, text in error_codes])
         QMessageBox.information(self, "Error Codes", message)

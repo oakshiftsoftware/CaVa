@@ -12,9 +12,28 @@ except Exception:
     sqlcipher = None
     _HAS_SQLCIPHER = False
 
+from . import crypto
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 DB_FILE = os.path.join(DATA_DIR, "cava.db")
+_DB_KEY_HEX: Optional[str] = None
+
+
+def set_db_key(key: Optional[str]) -> None:
+    global _DB_KEY_HEX
+    _DB_KEY_HEX = key
+
+
+def _encrypt_if_enabled(data: bytes) -> bytes:
+    if _DB_KEY_HEX:
+        return crypto.encrypt_bytes(data, _DB_KEY_HEX)
+    return data
+
+
+def _decrypt_if_enabled(data: bytes) -> bytes:
+    if _DB_KEY_HEX and data is not None:
+        return crypto.decrypt_bytes(data, _DB_KEY_HEX)
+    return data
 
 
 def _ensure_data_dir():
@@ -34,6 +53,7 @@ def _connect(key: Optional[str] = None):
 
 
 def init_db(key: Optional[str] = None):
+    set_db_key(key)
     conn = _connect(key)
     cur = conn.cursor()
     cur.execute("PRAGMA foreign_keys = ON;")
@@ -220,9 +240,11 @@ def add_note(case_id: int, summary: str, content: str) -> dict:
     conn = init_db()
     cur = conn.cursor()
     ts = int(time.time())
+    encrypted_summary = _encrypt_if_enabled(summary.encode("utf-8"))
+    encrypted_content = _encrypt_if_enabled(content.encode("utf-8"))
     cur.execute(
         "INSERT INTO notes (case_id, summary, content, created_at) VALUES (?, ?, ?, ?)",
-        (case_id, summary, content, ts),
+        (case_id, encrypted_summary, encrypted_content, ts),
     )
     conn.commit()
     nid = cur.lastrowid
@@ -240,15 +262,23 @@ def get_note(note_id: int) -> Optional[dict]:
     r = cur.fetchone()
     if not r:
         return None
-    return dict(id=r[0], case_id=r[1], summary=r[2], content=r[3], created_at=r[4])
+    return dict(
+        id=r[0],
+        case_id=r[1],
+        summary=_decrypt_if_enabled(r[2]).decode("utf-8") if r[2] is not None else "",
+        content=_decrypt_if_enabled(r[3]).decode("utf-8") if r[3] is not None else "",
+        created_at=r[4],
+    )
 
 
 def update_note(note_id: int, summary: str, content: str) -> Optional[dict]:
     conn = init_db()
     cur = conn.cursor()
+    encrypted_summary = _encrypt_if_enabled(summary.encode("utf-8"))
+    encrypted_content = _encrypt_if_enabled(content.encode("utf-8"))
     cur.execute(
         "UPDATE notes SET summary = ?, content = ? WHERE id = ?",
-        (summary, content, note_id),
+        (encrypted_summary, encrypted_content, note_id),
     )
     conn.commit()
     add_audit(f"note_updated:{note_id}", {"note": note_id})
@@ -263,7 +293,19 @@ def get_notes(case_id: int) -> List[dict]:
         (case_id,),
     )
     rows = cur.fetchall()
-    return [dict(id=r[0], summary=r[1], content=r[2], created_at=r[3]) for r in rows]
+    return [
+        dict(
+            id=r[0],
+            summary=(
+                _decrypt_if_enabled(r[1]).decode("utf-8") if r[1] is not None else ""
+            ),
+            content=(
+                _decrypt_if_enabled(r[2]).decode("utf-8") if r[2] is not None else ""
+            ),
+            created_at=r[3],
+        )
+        for r in rows
+    ]
 
 
 def delete_note(note_id: int):
@@ -278,9 +320,10 @@ def add_file(case_id: int, filename: str, data: bytes) -> dict:
     conn = init_db()
     cur = conn.cursor()
     ts = int(time.time())
+    encrypted_data = _encrypt_if_enabled(data)
     cur.execute(
         "INSERT INTO files (case_id, filename, data, created_at) VALUES (?, ?, ?, ?)",
-        (case_id, filename, data, ts),
+        (case_id, filename, encrypted_data, ts),
     )
     conn.commit()
     fid = cur.lastrowid
@@ -298,18 +341,32 @@ def get_file(file_id: int) -> Optional[dict]:
     r = cur.fetchone()
     if not r:
         return None
-    return dict(id=r[0], case_id=r[1], filename=r[2], data=r[3], created_at=r[4])
+    return dict(
+        id=r[0],
+        case_id=r[1],
+        filename=r[2],
+        data=_decrypt_if_enabled(r[3]) if r[3] is not None else b"",
+        created_at=r[4],
+    )
 
 
 def get_files(case_id: int) -> List[dict]:
     conn = init_db()
     cur = conn.cursor()
     cur.execute(
-        "SELECT id, filename, created_at FROM files WHERE case_id = ? ORDER BY created_at DESC",
+        "SELECT id, filename, data, created_at FROM files WHERE case_id = ? ORDER BY created_at DESC",
         (case_id,),
     )
     rows = cur.fetchall()
-    return [dict(id=r[0], filename=r[1], created_at=r[2]) for r in rows]
+    return [
+        dict(
+            id=r[0],
+            filename=r[1],
+            data=_decrypt_if_enabled(r[2]) if r[2] is not None else b"",
+            created_at=r[3],
+        )
+        for r in rows
+    ]
 
 
 def delete_file(file_id: int):
