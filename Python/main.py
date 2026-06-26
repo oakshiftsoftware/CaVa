@@ -61,7 +61,6 @@ class CaVaMain(QMainWindow):
 
         self.hide()
 
-        # wire signals
         self.dashboard.open_editor.connect(self.open_case_tab)
         self.dashboard.case_deleted.connect(self.on_case_deleted)
         self.dashboard.logout.connect(self.lock_session)
@@ -139,21 +138,18 @@ class CaVaMain(QMainWindow):
         self.show()
 
     def show_dashboard(self):
-        # switch to dashboard tab if it exists
         for i in range(self.tabs.count()):
             if self.tabs.widget(i) is self.dashboard:
                 self.tabs.setCurrentIndex(i)
                 return
-        # fallback: add dashboard
+        
         self.tabs.addTab(self.dashboard, "Cases")
         self.tabs.setCurrentIndex(self.tabs.count() - 1)
 
     def open_case_tab(self, case):
-        # if a tab for this case ref already exists, switch to it
         ref = case.get("ref")
         for i in range(self.tabs.count()):
             w = self.tabs.widget(i)
-            # Editor tabs have attribute current_case
             if (
                 hasattr(w, "current_case")
                 and w.current_case
@@ -161,11 +157,11 @@ class CaVaMain(QMainWindow):
             ):
                 self.tabs.setCurrentIndex(i)
                 return
-        # create a new editor tab for this case
+        
         editor = EditorWidget(storage, self.config)
         editor.load_case(case)
         editor.saved.connect(self.on_saved)
-        # listen for deletion from inside case view
+        
         if hasattr(editor, "case_deleted"):
             editor.case_deleted.connect(self.on_case_deleted)
         editor.cancelled.connect(self.show_dashboard)
@@ -173,7 +169,6 @@ class CaVaMain(QMainWindow):
         self.tabs.setCurrentIndex(self.tabs.count() - 1)
 
     def on_case_deleted(self, case_id: int):
-        # close any tabs referring to this case
         to_close = []
         for i in range(self.tabs.count()):
             w = self.tabs.widget(i)
@@ -183,24 +178,23 @@ class CaVaMain(QMainWindow):
                 and w.current_case.get("id") == case_id
             ):
                 to_close.append(i)
-        # remove from highest index to lowest to keep indices valid
+        
         for idx in sorted(to_close, reverse=True):
             self.tabs.removeTab(idx)
         self.dashboard.refresh()
 
     def _close_tab(self, index: int):
-        # Prevent closing the main Cases dashboard tab
         widget = self.tabs.widget(index)
         if widget is self.dashboard:
             QMessageBox.warning(self, "Close Tab", "Cannot close the Cases tab")
             return
-        # Remove and delete editor tab
+        
         self.tabs.removeTab(index)
         try:
             widget.deleteLater()
         except Exception:
             pass
-        # If no tabs remain, show the dashboard
+        
         if self.tabs.count() == 0:
             self.tabs.addTab(self.dashboard, "Cases")
             self.setCentralWidget(self.tabs)
