@@ -14,7 +14,7 @@ from PySide6.QtCore import Signal, Qt
 
 
 class DashboardWidget(QWidget):
-    open_editor = Signal(object)  # emits case dict
+    open_editor = Signal(object)
     logout = Signal()
     case_deleted = Signal(int)
 

@@ -10,6 +10,7 @@ def create_case(
     county: str | None = None,
     suspect_name: str | None = None,
     victim_name: str | None = None,
+    category: str | None = None,
     crime_type: str | None = None,
 ):
     return db.create_case(
@@ -17,6 +18,7 @@ def create_case(
         county=county,
         suspect_name=suspect_name,
         victim_name=victim_name,
+        category=category,
         crime_type=crime_type,
     )
 

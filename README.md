@@ -7,7 +7,6 @@ The project is being developed as a desktop application with a strong emphasis o
 ---
 
 ## Overview
-
 CaVa provides investigators, analysts, researchers, and intelligence professionals with a local-only environment in which they can manage:
 
 * Cases
@@ -43,7 +42,7 @@ The application should remain intuitive and easy to use without sacrificing secu
 
 ---
 
-## Planned Features
+## Features
 
 ### Case Management
 * Create and organise investigations
@@ -110,26 +109,9 @@ The current implementation does not yet include full cloud sync, versioned evide
 | Cryptography        | cryptography                 |
 | Key derivation      | argon2-cffi                  |
 
-## Error Codes
-
-The current prototype uses a small set of vault authentication error codes:
-
-| Code | Meaning |
-| ---- | ------- |
-| E100 | Vault already initialized |
-| E101 | Vault has not been initialized |
-| E102 | Incorrect password |
-| E103 | Argon2 is not available; install `argon2-cffi` |
-| E104 | Unable to derive vault key |
-| E199 | General failure or unexpected error |
-
-| Password Derivation | Argon2                       |
-| Storage             | SQLite with optional application-layer payload encryption |
-| Formatting          | Black                        |
-
 ---
 
-## Project Structure
+## Python Project Structure
 
 ```text
 CaVa/
@@ -152,6 +134,8 @@ CaVa/
 │   ├── db.py
 │   └── storage.py
 │
+├── License.txt
+│
 ├── main.py
 │
 ├── README.md
@@ -159,6 +143,14 @@ CaVa/
 └── requirements.txt
 
 ```
+
+
+
+---
+&nbsp;
+# CaVa `Python`
+
+This repository is intended to be run directly from source using Python 3.
 
 ---
 
@@ -198,7 +190,69 @@ Launch the application:
 python main.py
 ```
 
+
+
 ---
+&nbsp;
+# CaVa `Source`
+
+This directory contains the PyInstaller one-directory packaging artifacts for CaVa.
+
+## Contents
+- `CaVa.exe` — the packaged executable for the application
+- `_internal/` — Contains all of the application dependencies and directory locations
+- `Licence.txt` — contains the CaVa End User Licence Agreement (EULA)
+- `README.md` — not required for application functionality, but useful for usage directions
+
+## Usage
+Copy the contents of the downloaded `Source/` directory to the local directory of your choice.
+
+Run the packaged application directly:
+
+```powershell
+CaVa.exe
+```
+
+
+
+---
+&nbsp;
+# CaVa `Installer`
+
+This installer has been created for CaVa on Windows.
+
+## Installer
+
+- `CaVa_Setup_V_1_2_2.exe` is the generated Windows installer package.
+
+## Expected Behavior
+
+When run, the installer should:
+
+1. Display the CaVa setup wizard.
+2. Install the packaged application files into the chosen destination folder.
+3. Optionally create desktop and Start menu shortcuts.
+4. Register `CaVa.exe` as the installed application launcher.
+
+## Notes
+
+- The installer bundle is intended for Windows users who want a standard installation experience.
+- The installer does not require source Python to be installed on the target machine.
+
+## Troubleshooting
+
+If the installer fails:
+
+- Verify the target machine is running a supported Windows version.
+- Ensure any antivirus or endpoint protection is not blocking the installer.
+- Rebuild the PyInstaller executable before regenerating the installer to ensure the latest application binary is included.
+- If all other troubleshooting has not resolved the issue, then contact oakshiftsoftware@gmail.com for additional support
+
+
+
+---
+&nbsp;
+# Additional
 
 ## Error Codes
 

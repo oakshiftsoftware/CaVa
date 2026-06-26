@@ -41,18 +41,30 @@ class EditorWidget(QWidget):
         self.county_input = QLineEdit()
         self.suspect_input = QLineEdit()
         self.victim_input = QLineEdit()
-        self.crime_input = QLineEdit()
+        self.category_input = QLineEdit()
         self.meta_form.addRow("Case Title", self.case_title_input)
         self.meta_form.addRow("County", self.county_input)
         self.meta_form.addRow("Suspect", self.suspect_input)
         self.meta_form.addRow("Victim", self.victim_input)
-        self.meta_form.addRow("Crime", self.crime_input)
+        self.meta_form.addRow("Category", self.category_input)
 
         lists_layout = QHBoxLayout()
+        notes_panel = QVBoxLayout()
+        notes_label = QLabel("Notes")
+        notes_label.setStyleSheet("font-weight: bold; font-size: 12px;")
         self.notes_list = QListWidget()
+        notes_panel.addWidget(notes_label)
+        notes_panel.addWidget(self.notes_list)
+
+        files_panel = QVBoxLayout()
+        files_label = QLabel("Attachments")
+        files_label.setStyleSheet("font-weight: bold; font-size: 12px;")
         self.files_list = QListWidget()
-        lists_layout.addWidget(self.notes_list)
-        lists_layout.addWidget(self.files_list)
+        files_panel.addWidget(files_label)
+        files_panel.addWidget(self.files_list)
+
+        lists_layout.addLayout(notes_panel)
+        lists_layout.addLayout(files_panel)
 
         self.text = QTextEdit()
         self.text.setReadOnly(True)
@@ -111,7 +123,7 @@ class EditorWidget(QWidget):
             self.county_input.clear()
             self.suspect_input.clear()
             self.victim_input.clear()
-            self.crime_input.clear()
+            self.category_input.clear()
             self.notes_list.clear()
             self.files_list.clear()
             self.text.clear()
@@ -122,7 +134,7 @@ class EditorWidget(QWidget):
         self.county_input.setText(case.get("county") or "")
         self.suspect_input.setText(case.get("suspect_name") or "")
         self.victim_input.setText(case.get("victim_name") or "")
-        self.crime_input.setText(case.get("crime_type") or "")
+        self.category_input.setText(case.get("category") or "")
         self.refresh_lists()
 
     def refresh_lists(self):
@@ -218,7 +230,7 @@ class EditorWidget(QWidget):
             "county": self.county_input.text().strip(),
             "suspect_name": self.suspect_input.text().strip(),
             "victim_name": self.victim_input.text().strip(),
-            "crime_type": self.crime_input.text().strip(),
+            "category": self.category_input.text().strip(),
         }
         self.storage.update_case(self.current_case.get("id"), **meta)
         self.current_case = self.storage.get_case(self.current_case.get("id"))
@@ -303,7 +315,7 @@ class EditorWidget(QWidget):
         )
         html.append(f"<p><strong>Victim:</strong> {case.get('victim_name') or ''}</p>")
         html.append(
-            f"<p><strong>Crime Type:</strong> {case.get('crime_type') or ''}</p>"
+            f"<p><strong>Category:</strong> {case.get('category') or ''}</p>"
         )
 
         def _fmt(dtval):
