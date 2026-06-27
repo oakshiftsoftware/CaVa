@@ -23,6 +23,7 @@ from data.config import AppConfig
 from ui.dashboard import DashboardWidget
 from ui.editor import EditorWidget
 from ui.settings import SettingsDialog
+from ui.audit import AuditDialog
 
 import vault.auth as auth
 import vault.storage as storage
@@ -142,7 +143,7 @@ class CaVaMain(QMainWindow):
             if self.tabs.widget(i) is self.dashboard:
                 self.tabs.setCurrentIndex(i)
                 return
-        
+
         self.tabs.addTab(self.dashboard, "Cases")
         self.tabs.setCurrentIndex(self.tabs.count() - 1)
 
@@ -157,11 +158,11 @@ class CaVaMain(QMainWindow):
             ):
                 self.tabs.setCurrentIndex(i)
                 return
-        
+
         editor = EditorWidget(storage, self.config)
         editor.load_case(case)
         editor.saved.connect(self.on_saved)
-        
+
         if hasattr(editor, "case_deleted"):
             editor.case_deleted.connect(self.on_case_deleted)
         editor.cancelled.connect(self.show_dashboard)
@@ -178,7 +179,7 @@ class CaVaMain(QMainWindow):
                 and w.current_case.get("id") == case_id
             ):
                 to_close.append(i)
-        
+
         for idx in sorted(to_close, reverse=True):
             self.tabs.removeTab(idx)
         self.dashboard.refresh()
@@ -188,13 +189,13 @@ class CaVaMain(QMainWindow):
         if widget is self.dashboard:
             QMessageBox.warning(self, "Close Tab", "Cannot close the Cases tab")
             return
-        
+
         self.tabs.removeTab(index)
         try:
             widget.deleteLater()
         except Exception:
             pass
-        
+
         if self.tabs.count() == 0:
             self.tabs.addTab(self.dashboard, "Cases")
             self.setCentralWidget(self.tabs)
@@ -202,7 +203,6 @@ class CaVaMain(QMainWindow):
     def on_saved(self):
         storage.add_audit("note_saved")
         self.dashboard.refresh()
-        self.show_dashboard()
 
     def lock_session(self):
         storage.add_audit("user_logout")
@@ -226,13 +226,23 @@ class CaVaMain(QMainWindow):
         dlg = SettingsDialog(self.config, self)
         if dlg.exec():
             self.apply_theme()
+            self.setWindowTitle(
+                f"{self.config.org_tag} {self.config.app_name} (v{self.config.version})"
+            )
+
+    def show_audit(self):
+        dlg = AuditDialog(storage, self)
+        dlg.exec()
 
     def show_error_codes(self):
         error_codes = [
             (auth.ERROR_CODE_VAULT_ALREADY_INITIALIZED, "Vault already initialized"),
             (auth.ERROR_CODE_VAULT_NOT_INITIALIZED, "Vault has not been initialized"),
             (auth.ERROR_CODE_INVALID_PASSWORD, "Incorrect password"),
-            (auth.ERROR_CODE_CRYPTO_MISSING, "Argon2 is not available; install argon2-cffi"),
+            (
+                auth.ERROR_CODE_CRYPTO_MISSING,
+                "Argon2 is not available; install argon2-cffi",
+            ),
             (auth.ERROR_CODE_KEY_DERIVATION_FAILED, "Unable to derive vault key"),
             (auth.ERROR_CODE_GENERAL_FAILURE, "General failure or unexpected error"),
         ]
@@ -245,7 +255,7 @@ class CaVaMain(QMainWindow):
             f"Author: {self.config.author}\n"
             f"License: {self.config.license}\n"
             f"Organization: {self.config.org_tag}\n\n"
-            "Case Vault is a secure case management prototype with encrypted storage, notes, and file attachments."
+            "Case Vault is a secure, local only, case management system with encrypted storage, notes, and file attachments."
         )
         QMessageBox.information(self, "About", _about_text)
 

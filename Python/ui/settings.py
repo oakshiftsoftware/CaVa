@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QLabel,
+    QLineEdit,
     QRadioButton,
     QPushButton,
     QButtonGroup,
@@ -32,6 +33,11 @@ class SettingsDialog(QDialog):
 
         layout = QVBoxLayout(self)
 
+        layout.addWidget(QLabel("Organisation tag"))
+        self.org_input = QLineEdit(self.config.org_tag)
+        self.org_input.setPlaceholderText("Organisation tag")
+        layout.addWidget(self.org_input)
+
         layout.addWidget(QLabel("Theme"))
         self.light_radio = QRadioButton("Light")
         self.dark_radio = QRadioButton("Dark")
@@ -51,6 +57,7 @@ class SettingsDialog(QDialog):
         layout.addWidget(save_btn)
 
     def save_settings(self):
+        self.config.org_tag = self.org_input.text().strip()
         self.config.theme = "dark" if self.dark_radio.isChecked() else "light"
         self.config.save()
         QMessageBox.information(

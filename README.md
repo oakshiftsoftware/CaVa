@@ -9,13 +9,12 @@ The project is being developed as a desktop application with a strong emphasis o
 ## Overview
 CaVa provides investigators, analysts, researchers, and intelligence professionals with a local-only environment in which they can manage:
 
-* Cases
-* Notes
-* Documents
-* Evidence records
-* Attachments
-* Audit logs
-* Investigative timelines
+* Cases and case metadata
+* Notes and research session records
+* Attachments and secure evidence files
+* Person profiles linked to cases
+* Related case links and investigation networks
+* Audit logs and action tracking
 
 All information is intended to remain under the direct control of the user, with no cloud services, telemetry, or external dependencies required during operation.
 
@@ -45,41 +44,45 @@ The application should remain intuitive and easy to use without sacrificing secu
 ## Features
 
 ### Case Management
-* Create and organise investigations
-* Categorise cases by status
-* Link related cases together
-* Store case metadata
+* Create and manage investigations in a secure local vault
+* Store and update case metadata, status, location, suspect, victim, and category
+* Link related cases to build investigation networks
+* Bundle case actions into a dedicated Case Actions dialog for save/export/delete workflows
 
-### Secure Notes
-* Rich-text note editor
-* Case-linked notes
-* Searchable content
-* Revision history
+### Notes & Research
+* Create, edit, and delete case-linked notes
+* Preview notes inline in the case editor
+* Group note actions into a compact Notes dialog for a cleaner editor layout
+* Track research sessions and record session actions
 
-### Document Storage
-* Secure document management
-* Optional encrypted storage
-* Metadata protection
+### Attachments & Evidence
+* Add and remove attachments directly from the case editor
+* Support for files, documents, images, and other evidence attachments
+* Attachment list refreshes immediately after changes
+* Group attachment management into a dedicated Attachments dialog
 
-### Evidence Management
-* Attachment support
-* Images
-* PDFs
-* Audio files
-* Video files
-* Digital evidence records
+### Person Profiles
+* Store person profiles associated with a case
+* Capture name, association type, role, contact details, and description
+* Manage case-linked people through a dedicated Person Profiles dialog
+
+### Related Cases & Session Control
+* Maintain links between related cases
+* View and manage related cases in the case editor
+* Start and end research sessions while preserving case context
+* Track session actions for improved workflow auditability
 
 ### Audit Logging
-* User activity tracking
-* Tamper-evident audit records
-* Historical event review
+* User activity tracking and audit records
+* Tamper-evident audit entries for key actions
+* Reviewable history for investigation workflows
 
 ### Security Features
 * Password-protected vault access
 * Encryption of stored data
-* Automatic session locking
 * Secure key derivation
 * Encrypted audit records
+* Offline-first operation with no cloud telemetry
 
 ---
 
@@ -89,12 +92,12 @@ CaVa is currently under active development.
 
 The current prototype includes:
 
-* Application framework
-* Separate login / initialization dialog
-* Dashboard interface
-* Case management with metadata, notes, and files
+* Secure login and vault initialization
+* Dashboard interface with case search and selection
+* Case editor with metadata, notes, attachments, related cases, person profiles, and session controls
+* Dialog-based workflow grouping for notes, attachments, case actions, profiles, and related cases
 * Encrypted vault key derivation with a Windows-friendly SQLite payload encryption fallback
-* Audit logging support
+* Audit logging and session action tracking
 
 The current implementation does not yet include full cloud sync, versioned evidence tracking, or a complete revision history UI.
 
@@ -130,11 +133,14 @@ CaVa/
 │   └── config.py
 │
 ├── ui/
+│   ├── audit.py
+│   ├── case_profiles.py
 │   ├── dashboard.py
 │   ├── editor.py
 │   ├── login.py
 │   ├── note_editor.py
-│   └── settings.py
+│   ├── settings.py
+│   └── audit.py
 │
 ├── vault/
 │   ├── auth.py
@@ -145,8 +151,6 @@ CaVa/
 ├── License.txt
 │
 ├── main.py
-│
-├── README.md
 │
 └── requirements.txt
 
@@ -200,7 +204,7 @@ This installer has been created for CaVa on Windows.
 
 ## Installer
 
-- `CaVa_Setup_V_1_2_2.exe` is the generated Windows installer package.
+- `CaVa_Setup_V_1_3_0.exe` is the generated Windows installer package.
 
 ## Expected Behavior
 
@@ -269,7 +273,7 @@ This project is currently in early development and contribution guidelines may c
 
 ## License
 
-License information will be defined prior to public release.
+License information can be found in the `License.txt` file.
 
 ---
 
@@ -278,3 +282,13 @@ License information will be defined prior to public release.
 CaVa is intended to assist with the organisation and management of investigative information.
 
 Users remain responsible for ensuring compliance with all applicable local and international laws, regulations, organisational policies, and data protection requirements relevant to their jurisdiction and use case.
+
+---
+
+## Planned Features
+
+Upcoming planned features include, but are not limited to:
+
+- Enhanced Settings - Including the ability to change and edit your `Organisation` after initialisation.
+- Research Sessions - Every action performed during a `Research Session` would be logged and timestamped, and when the `Research Session` is ended CaVa would generate a `Research Entry` within the specified case (shown in a timeline format).
+- Case Functionality Expansion - Introduction of person `Profiles`, `locations`, `Evidence` and a drag and drop `Timeline` for `Key Events` worth noting within a Case. The idea being that linked and timelined items would make case analysis easier and simpler.

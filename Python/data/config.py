@@ -9,7 +9,7 @@ class AppConfig:
     def __init__(self):
         self.org_tag = ""
         self.app_name = "Case Vault"
-        self.version = "1.2.3"
+        self.version = "1.3.0"
         self.author = "Oakshift Software"
         self.license = "CLASSIFIED"
         self.theme = "light"
@@ -61,6 +61,9 @@ class AppConfig:
 
         hc_action = help_menu.addAction("Errors")
         hc_action.triggered.connect(app.show_error_codes)
+
+        audit_action = help_menu.addAction("Audit Log")
+        audit_action.triggered.connect(app.show_audit)
 
     def app_resize(self, app, size_key: str):
         width, height = self._get_window_size(size_key)

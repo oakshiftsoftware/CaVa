@@ -75,6 +75,72 @@ def complete_case(case_id: int):
     return db.complete_case(case_id)
 
 
+def link_case(case_id: int, related_case_id: int):
+    return db.link_case(case_id, related_case_id)
+
+
+def unlink_case(case_id: int, related_case_id: int):
+    return db.unlink_case(case_id, related_case_id)
+
+
+def get_related_cases(case_id: int):
+    return db.get_related_cases(case_id)
+
+
+def create_case_profile(
+    case_id: int,
+    name: str,
+    association_type: str,
+    role: str | None = None,
+    contact_info: str | None = None,
+    description: str | None = None,
+):
+    return db.create_case_profile(
+        case_id,
+        name,
+        association_type,
+        role=role,
+        contact_info=contact_info,
+        description=description,
+    )
+
+
+def update_case_profile(profile_id: int, **metadata):
+    return db.update_case_profile(profile_id, **metadata)
+
+
+def delete_case_profile(profile_id: int):
+    return db.delete_case_profile(profile_id)
+
+
+def get_case_profiles(case_id: int):
+    return db.get_case_profiles(case_id)
+
+
+def get_case_profile(profile_id: int):
+    return db.get_case_profile(profile_id)
+
+
+def start_research_session(case_id: int, name: str | None = None):
+    return db.start_research_session(case_id, name)
+
+
+def end_research_session(session_id: int):
+    return db.end_research_session(session_id)
+
+
+def add_research_action(session_id: int, event: str, meta: dict | None = None):
+    return db.add_research_action(session_id, event, meta)
+
+
+def get_research_sessions(case_id: int):
+    return db.get_research_sessions(case_id)
+
+
+def get_research_actions(session_id: int):
+    return db.get_research_actions(session_id)
+
+
 def add_audit(event: str, meta: dict | None = None):
     return db.add_audit(event, meta)
 
