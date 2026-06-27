@@ -77,10 +77,12 @@ def init_db(key: Optional[str] = None):
             cur.execute("ALTER TABLE cases RENAME COLUMN crime_type TO category;")
         except sqlite3.OperationalError:
             cur.execute("ALTER TABLE cases ADD COLUMN category TEXT;")
-            cur.execute("UPDATE cases SET category = crime_type WHERE category IS NULL;")
+            cur.execute(
+                "UPDATE cases SET category = crime_type WHERE category IS NULL;"
+            )
 
     extras = {
-        "county": "TEXT",
+        "location": "TEXT",
         "suspect_name": "TEXT",
         "victim_name": "TEXT",
         "category": "TEXT",
@@ -133,7 +135,7 @@ def _gen_ref() -> str:
 
 def create_case(
     title: str,
-    county: Optional[str] = None,
+    location: Optional[str] = None,
     suspect_name: Optional[str] = None,
     victim_name: Optional[str] = None,
     category: Optional[str] = None,
@@ -145,8 +147,8 @@ def create_case(
     ts = int(time.time())
     category_value = category if category is not None else crime_type
     cur.execute(
-        "INSERT INTO cases (ref, title, status, created_at, county, suspect_name, victim_name, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        (ref, title, "open", ts, county, suspect_name, victim_name, category_value),
+        "INSERT INTO cases (ref, title, status, created_at, location, suspect_name, victim_name, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        (ref, title, "open", ts, location, suspect_name, victim_name, category_value),
     )
     conn.commit()
     cid = cur.lastrowid
@@ -157,7 +159,7 @@ def list_cases() -> List[dict]:
     conn = init_db()
     cur = conn.cursor()
     cur.execute(
-        "SELECT id, ref, title, status, created_at, completed_at, county, suspect_name, victim_name, category FROM cases ORDER BY created_at DESC"
+        "SELECT id, ref, title, status, created_at, completed_at, location, suspect_name, victim_name, category FROM cases ORDER BY created_at DESC"
     )
     rows = cur.fetchall()
     return [
@@ -168,7 +170,7 @@ def list_cases() -> List[dict]:
             status=r[3],
             created_at=r[4],
             completed_at=r[5],
-            county=r[6],
+            location=r[6],
             suspect_name=r[7],
             victim_name=r[8],
             category=r[9],
@@ -182,7 +184,7 @@ def search_cases(query: str) -> List[dict]:
     cur = conn.cursor()
     q = f"%{query}%"
     cur.execute(
-        "SELECT id, ref, title, status, created_at, completed_at, county, suspect_name, victim_name, category FROM cases WHERE title LIKE ? OR ref LIKE ? ORDER BY created_at DESC",
+        "SELECT id, ref, title, status, created_at, completed_at, location, suspect_name, victim_name, category FROM cases WHERE title LIKE ? OR ref LIKE ? ORDER BY created_at DESC",
         (q, q),
     )
     rows = cur.fetchall()
@@ -194,7 +196,7 @@ def search_cases(query: str) -> List[dict]:
             status=r[3],
             created_at=r[4],
             completed_at=r[5],
-            county=r[6],
+            location=r[6],
             suspect_name=r[7],
             victim_name=r[8],
             category=r[9],
@@ -207,7 +209,7 @@ def get_case(case_id: int) -> Optional[dict]:
     conn = init_db()
     cur = conn.cursor()
     cur.execute(
-        "SELECT id, ref, title, status, created_at, completed_at, county, suspect_name, victim_name, category FROM cases WHERE id = ?",
+        "SELECT id, ref, title, status, created_at, completed_at, location, suspect_name, victim_name, category FROM cases WHERE id = ?",
         (case_id,),
     )
     r = cur.fetchone()
@@ -220,7 +222,7 @@ def get_case(case_id: int) -> Optional[dict]:
         status=r[3],
         created_at=r[4],
         completed_at=r[5],
-        county=r[6],
+        location=r[6],
         suspect_name=r[7],
         victim_name=r[8],
         category=r[9],
@@ -230,7 +232,7 @@ def get_case(case_id: int) -> Optional[dict]:
 def update_case(case_id: int, **metadata) -> Optional[dict]:
     conn = init_db()
     cur = conn.cursor()
-    allowed = ["title", "status", "county", "suspect_name", "victim_name", "category"]
+    allowed = ["title", "status", "location", "suspect_name", "victim_name", "category"]
     fields = []
     values = []
     for k, v in metadata.items():

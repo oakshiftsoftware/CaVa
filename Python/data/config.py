@@ -9,7 +9,7 @@ class AppConfig:
     def __init__(self):
         self.org_tag = ""
         self.app_name = "Case Vault"
-        self.version = "1.2.2"
+        self.version = "1.2.3"
         self.author = "Oakshift Software"
         self.license = "CLASSIFIED"
         self.theme = "light"

@@ -7,7 +7,7 @@ def init_db(key: str | None = None):
 
 def create_case(
     title: str,
-    county: str | None = None,
+    location: str | None = None,
     suspect_name: str | None = None,
     victim_name: str | None = None,
     category: str | None = None,
@@ -15,7 +15,7 @@ def create_case(
 ):
     return db.create_case(
         title,
-        county=county,
+        location=location,
         suspect_name=suspect_name,
         victim_name=victim_name,
         category=category,

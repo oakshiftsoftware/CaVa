@@ -109,6 +109,14 @@ The current implementation does not yet include full cloud sync, versioned evide
 | Cryptography        | cryptography                 |
 | Key derivation      | argon2-cffi                  |
 
+
+
+---
+&nbsp;
+# CaVa `Python`
+
+This repository is intended to be run directly from source using Python 3.
+
 ---
 
 ## Python Project Structure
@@ -143,14 +151,6 @@ CaVa/
 └── requirements.txt
 
 ```
-
-
-
----
-&nbsp;
-# CaVa `Python`
-
-This repository is intended to be run directly from source using Python 3.
 
 ---
 
@@ -188,29 +188,6 @@ Launch the application:
 
 ```bash
 python main.py
-```
-
-
-
----
-&nbsp;
-# CaVa `Source`
-
-This directory contains the PyInstaller one-directory packaging artifacts for CaVa.
-
-## Contents
-- `CaVa.exe` — the packaged executable for the application
-- `_internal/` — Contains all of the application dependencies and directory locations
-- `Licence.txt` — contains the CaVa End User Licence Agreement (EULA)
-- `README.md` — not required for application functionality, but useful for usage directions
-
-## Usage
-Copy the contents of the downloaded `Source/` directory to the local directory of your choice.
-
-Run the packaged application directly:
-
-```powershell
-CaVa.exe
 ```
 
 

@@ -38,12 +38,12 @@ class EditorWidget(QWidget):
 
         self.meta_form = QFormLayout()
         self.case_title_input = QLineEdit()
-        self.county_input = QLineEdit()
+        self.location_input = QLineEdit()
         self.suspect_input = QLineEdit()
         self.victim_input = QLineEdit()
         self.category_input = QLineEdit()
         self.meta_form.addRow("Case Title", self.case_title_input)
-        self.meta_form.addRow("County", self.county_input)
+        self.meta_form.addRow("Location", self.location_input)
         self.meta_form.addRow("Suspect", self.suspect_input)
         self.meta_form.addRow("Victim", self.victim_input)
         self.meta_form.addRow("Category", self.category_input)
@@ -120,7 +120,7 @@ class EditorWidget(QWidget):
         if not case:
             self.title.setText("No case selected")
             self.case_title_input.clear()
-            self.county_input.clear()
+            self.location_input.clear()
             self.suspect_input.clear()
             self.victim_input.clear()
             self.category_input.clear()
@@ -131,7 +131,7 @@ class EditorWidget(QWidget):
 
         self.title.setText(f"Case: {case.get('ref')} — {case.get('title')}")
         self.case_title_input.setText(case.get("title") or "")
-        self.county_input.setText(case.get("county") or "")
+        self.location_input.setText(case.get("location") or "")
         self.suspect_input.setText(case.get("suspect_name") or "")
         self.victim_input.setText(case.get("victim_name") or "")
         self.category_input.setText(case.get("category") or "")
@@ -227,7 +227,7 @@ class EditorWidget(QWidget):
             return
         meta = {
             "title": self.case_title_input.text().strip(),
-            "county": self.county_input.text().strip(),
+            "location": self.location_input.text().strip(),
             "suspect_name": self.suspect_input.text().strip(),
             "victim_name": self.victim_input.text().strip(),
             "category": self.category_input.text().strip(),
@@ -309,14 +309,12 @@ class EditorWidget(QWidget):
 
         html.append(f"<h1>Case Summary: {case.get('ref')}</h1>")
         html.append(f"<p><strong>Title:</strong> {case.get('title') or ''}</p>")
-        html.append(f"<p><strong>County:</strong> {case.get('county') or ''}</p>")
+        html.append(f"<p><strong>Location:</strong> {case.get('location') or ''}</p>")
         html.append(
             f"<p><strong>Suspect:</strong> {case.get('suspect_name') or ''}</p>"
         )
         html.append(f"<p><strong>Victim:</strong> {case.get('victim_name') or ''}</p>")
-        html.append(
-            f"<p><strong>Category:</strong> {case.get('category') or ''}</p>"
-        )
+        html.append(f"<p><strong>Category:</strong> {case.get('category') or ''}</p>")
 
         def _fmt(dtval):
             if not dtval:
