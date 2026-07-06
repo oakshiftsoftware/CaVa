@@ -1,5 +1,8 @@
 # CaVa
 
+![Python](https://img.shields.io/badge/Python-3.13+-blue.svg)
+![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)
+
 **CaVa (Case Vault)** is a secure, offline-first investigation and case management application designed for the storage, organisation, and management of sensitive investigative information.
 
 The project is being developed as a desktop application with a strong emphasis on privacy, data ownership, encryption, auditability, and operational security.
